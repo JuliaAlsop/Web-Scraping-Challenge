@@ -10,12 +10,12 @@ def init_browser():
 
 def scrape():
     browser = init_browser()
-    # create mars_data dict that we can insert into mongo
-    mars_data = {}
+    # create surf_data dict that we can insert into mongo
+    surf_data = {}
 
-    # visit nasa.com
-    nasa = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
-    browser.visit(nasa)
+    # visit unsplash.com
+    unsplash = "https://unsplash.com/search/photos/surfing"
+    browser.visit(unsplash)
     browser.is_element_present_by_id("gridMulti", 1)
     html = browser.html
 
@@ -24,16 +24,16 @@ def scrape():
     elem = img_soup.find(id="gridMulti")
     img_src = elem.find("img")["src"]
 
-    # add our src to mars data with a key of src
-    mars_data["src"] = img_src
+    # add our src to surf data with a key of src
+    surf_data["src"] = img_src
 
-    # visit nasa to get weather report
+    # visit surfline to get weather report
     weather = (
-        "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
+        "http://www.surfline.com/surf-forecasts/southern-california/santa-barbara_2141"
     )
     browser.visit(weather)
 
-    # grab our new html from nasa
+    # grab our new html from surfline
     browser.is_element_present_by_css(".sl-premium-analysis-link", 1)
     analysis_url = browser.find_link_by_partial_href("premium-analysis").first["href"]
     browser.visit(analysis_url)
@@ -42,19 +42,19 @@ def scrape():
     # create soup object from html
     html = browser.html
     report = BeautifulSoup(html, "html.parser")
-    mars_report = report.find_all("p")
-    # add it to our mars data dict
-    mars_data["report"] = build_report(mars_report)
-    # return our mars data dict
+    surf_report = report.find_all("p")
+    # add it to our surf data dict
+    surf_data["report"] = build_report(surf_report)
+    # return our surf data dict
 
     browser.quit()
-    return mars_data
+    return surf_data
 
 
-# helper function to build mars report
-def build_report(mars_report):
+# helper function to build surf report
+def build_report(surf_report):
     final_report = ""
-    for p in mars_report:
+    for p in surf_report:
         final_report += " " + p.get_text()
         print(final_report)
     return final_report
