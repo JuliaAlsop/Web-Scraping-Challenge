@@ -10,8 +10,8 @@ def init_browser():
 
 def scrape():
     browser = init_browser()
-    # create surf_data dict that we can insert into mongo
-    surf_data = {}
+    # create marsp_data dict that we can insert into mongo
+    marsp_data = {}
 
     # visit unsplash.com
     unsplash = "https://unsplash.com/search/photos/surfing"
@@ -25,36 +25,24 @@ def scrape():
     img_src = elem.find("img")["src"]
 
     # add our src to surf data with a key of src
-    surf_data["src"] = img_src
-
-    # visit surfline to get weather report
-    weather = (
-        "http://www.surfline.com/surf-forecasts/southern-california/santa-barbara_2141"
-    )
-    browser.visit(weather)
-
-    # grab our new html from surfline
-    browser.is_element_present_by_css(".sl-premium-analysis-link", 1)
-    analysis_url = browser.find_link_by_partial_href("premium-analysis").first["href"]
-    browser.visit(analysis_url)
-    browser.is_element_present_by_css(".sl-feed-article", 1)
+    marsp_data["src"] = img_src
 
     # create soup object from html
     html = browser.html
     report = BeautifulSoup(html, "html.parser")
-    surf_report = report.find_all("p")
-    # add it to our surf data dict
-    surf_data["report"] = build_report(surf_report)
-    # return our surf data dict
+    marsp_report = report.find_all("p")
+    # add it to our marsp data dict
+    marsp_data["report"] = build_report(marsp_report)
+    # return our marsp data dict
 
     browser.quit()
-    return surf_data
+    return marsp_data
 
 
-# helper function to build surf report
-def build_report(surf_report):
+# helper function to build marsp report
+def build_report(marsp_report):
     final_report = ""
-    for p in surf_report:
+    for p in marsp_report:
         final_report += " " + p.get_text()
         print(final_report)
     return final_report
