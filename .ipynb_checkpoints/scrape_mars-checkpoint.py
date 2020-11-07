@@ -13,18 +13,12 @@ def scrape():
     # create marsp_data dict that we can insert into mongo
     marsp_data = {}
 
-    # visit unsplash.com
-    unsplash = "https://unsplash.com/search/photos/surfing"
-    browser.visit(unsplash)
-    browser.is_element_present_by_id("gridMulti", 1)
-    html = browser.html
-
     # create a soup object from the html
     img_soup = BeautifulSoup(html, "html.parser")
     elem = img_soup.find(id="gridMulti")
     img_src = elem.find("img")["src"]
 
-    # add our src to surf data with a key of src
+    # add our src to marsp data with a key of src
     marsp_data["src"] = img_src
 
     # create soup object from html
